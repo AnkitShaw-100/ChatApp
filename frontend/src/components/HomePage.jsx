@@ -1,15 +1,25 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSocket } from '../context/SocketContext.jsx';
 
 export default function NameEntryPage() {
     const [name, setName] = useState('');
+    const [isJoining, setIsJoining] = useState(false);
     const navigate = useNavigate();
+    const { joinRoom, isConnected } = useSocket();
 
-    const handleSubmit = () => {
-        if (name.trim()) {
+    const handleSubmit = async () => {
+        if (name.trim() && isConnected) {
+            setIsJoining(true);
             console.log('Name entered:', name);
-            // Navigate to chat page
-            navigate('/chat');
+            
+            // Join the chat room
+            joinRoom(name);
+            
+            // Navigate to chat page with username
+            navigate('/chat', { state: { username: name } });
+        } else if (!isConnected) {
+            alert('Please wait for connection to the server...');
         }
     };
 
@@ -44,10 +54,22 @@ export default function NameEntryPage() {
 
                         <button
                             onClick={handleSubmit}
-                            className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                            disabled={!name.trim() || !isConnected || isJoining}
+                            className={`w-full font-medium py-3 px-6 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                                !name.trim() || !isConnected || isJoining
+                                    ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                                    : 'bg-green-500 hover:bg-green-600 text-white focus:ring-green-500'
+                            }`}
                         >
-                            Continue
+                            {isJoining ? 'Joining...' : !isConnected ? 'Connecting...' : 'Continue'}
                         </button>
+                        
+                        <div className="text-center text-sm">
+                            <span className={`inline-flex items-center ${isConnected ? 'text-green-600' : 'text-red-600'}`}>
+                                <span className={`w-2 h-2 rounded-full mr-2 ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                                {isConnected ? 'Connected to server' : 'Connecting to server...'}
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
