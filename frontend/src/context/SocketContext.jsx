@@ -17,7 +17,7 @@ export const SocketProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
-    const socketInstance = io('http://localhost:5000');
+    const socketInstance = io('https://chat-app-ankit-backend.vercel.app/');
     
     socketInstance.on('connect', () => {
       console.log('Connected to server with socket ID:', socketInstance.id);
