@@ -1,5 +1,5 @@
 import { io } from "socket.io-client";
 
 export function connectWS() {
-  return io("https://chat-app-ankit-backend.vercel.app/");
+  return io("https://chatapp-2-bvfh.onrender.com/");
 }
